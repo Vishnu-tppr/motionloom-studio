@@ -1,0 +1,25 @@
+{
+  "name": "motionloom-studio",
+  "version": "0.1.0",
+  "description": "Deterministic JavaScript motion graphics, character animation & SaaS product launch video engine for Claude Code. Powered by p5.js, spring physics, and headless 60fps MP4 export.",
+  "author": { "name": "Vishnu" },
+  "homepage": "https://github.com/vishnu-tppr/motionloom-studio",
+  "repository": "https://github.com/vishnu-tppr/motionloom-studio",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "motion-graphics",
+    "javascript-animation",
+    "p5js",
+    "canvas-animation",
+    "generative-art",
+    "saas-launch-video",
+    "creative-coding",
+    "spring-physics",
+    "procedural-animation",
+    "kinetic-typography",
+    "video-generator",
+    "claude-plugin",
+    "headless-rendering"
+  ]
+}

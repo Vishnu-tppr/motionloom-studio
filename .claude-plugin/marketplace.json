@@ -1,0 +1,20 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "motionloom-marketplace",
+  "owner": {
+    "name": "Vishnu"
+  },
+  "metadata": {
+    "description": "Deterministic JavaScript motion graphics and SaaS product launch video engine for Claude Code"
+  },
+  "plugins": [
+    {
+      "name": "motionloom-studio",
+      "source": "./",
+      "description": "MotionLoom Studio is an open-source Claude Code skill and plugin for creating **deterministic JavaScript motion graphics, character animation, and high-end SaaS/AI product launch videos** inspired by the viral Claude Opus 5.5 animation movement.",
+      "version": "0.1.0",
+      "license": "MIT",
+      "category": "design"
+    }
+  ]
+}
