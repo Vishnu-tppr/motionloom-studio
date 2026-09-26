@@ -1,0 +1,172 @@
+{
+  "$schema": "./motion.schema.json",
+  "meta": {
+    "title": "Signal to Story",
+    "version": 1
+  },
+  "canvas": {
+    "width": 1280,
+    "height": 720,
+    "fps": 30,
+    "duration": 10,
+    "background": "#f4efe4",
+    "seed": 24091999
+  },
+  "palette": {
+    "ink": "#14213d",
+    "paper": "#f4efe4",
+    "coral": "#ff5d73",
+    "cyan": "#18b7c9",
+    "yellow": "#ffc857",
+    "violet": "#6857d9",
+    "white": "#fffdf7",
+    "green": "#40b881"
+  },
+  "shots": [
+    {
+      "id": "open",
+      "label": "Opening title",
+      "start": 0,
+      "end": 2,
+      "color": "#ff5d73",
+      "source": { "file": "engine/src/scenes/demo.js", "symbol": "opening" }
+    },
+    {
+      "id": "character",
+      "label": "Character acting",
+      "start": 2,
+      "end": 4,
+      "color": "#18b7c9",
+      "source": { "file": "engine/src/scenes/demo.js", "symbol": "characterShot" }
+    },
+    {
+      "id": "procedural",
+      "label": "Procedural art",
+      "start": 4,
+      "end": 6,
+      "color": "#ffc857",
+      "source": { "file": "engine/src/scenes/demo.js", "symbol": "proceduralShot" }
+    },
+    {
+      "id": "product",
+      "label": "Product motion",
+      "start": 6,
+      "end": 8,
+      "color": "#6857d9",
+      "source": { "file": "engine/src/scenes/demo.js", "symbol": "productShot" }
+    },
+    {
+      "id": "finale",
+      "label": "Final payoff",
+      "start": 8,
+      "end": 10,
+      "color": "#40b881",
+      "source": { "file": "engine/src/scenes/demo.js", "symbol": "finale" }
+    }
+  ],
+  "objects": {
+    "open.title": {
+      "label": "Opening title",
+      "shot": "open",
+      "type": "text",
+      "source": { "file": "engine/src/scenes/demo.js", "symbol": "opening" },
+      "schema": { "text": "text", "color": "color", "x": [0, 1280, 1], "y": [0, 720, 1] },
+      "x": 640,
+      "y": 270,
+      "scale": 1,
+      "rotation": 0,
+      "opacity": 1,
+      "color": "#14213d",
+      "text": "MOTIONLOOM"
+    },
+    "character.spark": {
+      "label": "Spark character",
+      "shot": "character",
+      "type": "character",
+      "source": { "file": "engine/src/scenes/demo.js", "symbol": "characterShot" },
+      "schema": { "mood": ["curious", "happy", "worried"], "x": [0, 1280, 1], "y": [0, 720, 1], "scale": [0.2, 3, 0.01] },
+      "x": 520,
+      "y": 435,
+      "scale": 1.15,
+      "rotation": 0,
+      "opacity": 1,
+      "color": "#ffc857",
+      "entranceDuration": 1.15,
+      "mood": "happy"
+    },
+    "procedural.rings": {
+      "label": "Procedural rings",
+      "shot": "procedural",
+      "type": "art",
+      "source": { "file": "engine/src/scenes/demo.js", "symbol": "proceduralShot" },
+      "schema": { "color": "color", "speed": [0.1, 3, 0.01], "x": [0, 1280, 1], "y": [0, 720, 1] },
+      "x": 640,
+      "y": 365,
+      "scale": 1,
+      "rotation": 0,
+      "opacity": 1,
+      "color": "#18b7c9",
+      "speed": 1
+    },
+    "product.window": {
+      "label": "Product dashboard",
+      "shot": "product",
+      "type": "product",
+      "source": { "file": "engine/src/scenes/demo.js", "symbol": "productShot" },
+      "schema": { "color": "color", "x": [0, 1280, 1], "y": [0, 720, 1], "scale": [0.2, 2, 0.01] },
+      "x": 640,
+      "y": 390,
+      "scale": 1,
+      "rotation": 0,
+      "opacity": 1,
+      "color": "#6857d9",
+      "revealDuration": 0.9
+    },
+    "finale.title": {
+      "label": "Final title",
+      "shot": "finale",
+      "type": "text",
+      "source": { "file": "engine/src/scenes/demo.js", "symbol": "finale" },
+      "schema": { "text": "text", "color": "color", "x": [0, 1280, 1], "y": [0, 720, 1] },
+      "x": 640,
+      "y": 315,
+      "scale": 1,
+      "rotation": 0,
+      "opacity": 1,
+      "color": "#fffdf7",
+      "text": "DESCRIBE IT."
+    }
+  },
+  "cues": [
+    {
+      "id": "cue-open",
+      "label": "Title impact",
+      "time": 0.65,
+      "color": "#ff5d73"
+    },
+    {
+      "id": "cue-step",
+      "label": "Character step",
+      "time": 2.85,
+      "color": "#18b7c9"
+    },
+    {
+      "id": "cue-ring",
+      "label": "Ring bloom",
+      "time": 4.5,
+      "color": "#ffc857"
+    },
+    {
+      "id": "cue-click",
+      "label": "Product click",
+      "time": 7.2,
+      "color": "#6857d9"
+    },
+    {
+      "id": "cue-logo",
+      "label": "Final impact",
+      "time": 8.65,
+      "color": "#40b881"
+    }
+  ]
+}

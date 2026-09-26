@@ -1,0 +1,1 @@
+import fs from'node:fs';const p=JSON.parse(fs.readFileSync('engine/data/project.json','utf8'));console.log(p.meta.loop?'Loop project: render first/last pixel comparison required.':'Project is not marked as a loop; boundary comparison skipped.');

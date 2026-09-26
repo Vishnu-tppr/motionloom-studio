@@ -1,0 +1,78 @@
+{
+  "meta": {
+    "title": "One Line, Five Worlds",
+    "width": 1280,
+    "height": 720,
+    "fps": 30,
+    "duration": 10,
+    "seed": 1847,
+    "loop": false,
+    "renderContract": "motionloom/1",
+    "version": "0.4.0"
+  },
+  "brand": {"ink":"#13203f","paper":"#f4f0e5","pink":"#f55372","yellow":"#ffc857","cyan":"#26b7c4","violet":"#7658d6","green":"#35a879"},
+  "story": {
+    "idea": "One persistent ribbon transforms an idea across five visual worlds.",
+    "payoff": "The ribbon resolves into the MotionLoom mark.",
+    "token": "journey-ribbon",
+    "motionPrinciple": "anticipation-action-lag-settle",
+    "viewerTakeaway": "MotionLoom turns one brief into coherent deterministic motion."
+  },
+  "shots": [
+    {"id":"hook","name":"Opening hook","start":0,"end":2,"color":"#e15470","tokenState":"signal"},
+    {"id":"character","name":"Character","start":2,"end":4,"color":"#be9b43","tokenState":"smile"},
+    {"id":"procedural","name":"Procedural print","start":4,"end":6,"color":"#1697a4","tokenState":"orbit"},
+    {"id":"product","name":"Product motion","start":6,"end":8,"color":"#634ab7","tokenState":"trace"},
+    {"id":"payoff","name":"Brand payoff","start":8,"end":10,"color":"#288b65","tokenState":"mark"}
+  ],
+  "objects": [
+    {"id":"hero-title","name":"Hero title","type":"text","shotId":"hook","source":{"file":"engine/src/scenes.js","symbol":"drawHook"},"controls":{"x":640,"y":315,"scale":1,"rotation":0,"opacity":1,"text":"IDEA → MOTION","entrance":0.75,"color":"#13203f"},"schema":{"x":[0,1280,1],"y":[0,720,1],"scale":[0.2,3,0.01],"rotation":[-180,180,1],"opacity":[0,1,0.01],"text":"text","entrance":[0.1,2,0.01],"color":"color"}},
+    {"id":"spark","name":"Spark character","type":"character","shotId":"character","source":{"file":"engine/src/scenes.js","symbol":"drawCharacter"},"controls":{"x":520,"y":420,"scale":1.1,"rotation":0,"opacity":1,"mood":"curious","entrance":0.85,"bodyColor":"#ffc857"},"schema":{"x":[0,1280,1],"y":[0,720,1],"scale":[0.2,3,0.01],"rotation":[-180,180,1],"opacity":[0,1,0.01],"mood":["curious","happy","focused"],"entrance":[0.1,2,0.01],"bodyColor":"color"}},
+    {"id":"seeded-orbit","name":"Seeded orbit","type":"procedural","shotId":"procedural","source":{"file":"engine/src/scenes.js","symbol":"drawProcedural"},"controls":{"x":640,"y":360,"scale":1,"rotation":0,"opacity":1,"density":72,"speed":1,"entrance":0.7,"dotColor":"#26b7c4"},"schema":{"x":[0,1280,1],"y":[0,720,1],"scale":[0.2,3,0.01],"rotation":[-180,180,1],"opacity":[0,1,0.01],"density":[12,160,1],"speed":[0.1,3,0.01],"entrance":[0.1,2,0.01],"dotColor":"color"}},
+    {"id":"dashboard","name":"Product dashboard","type":"product","shotId":"product","source":{"file":"engine/src/scenes.js","symbol":"drawProduct"},"controls":{"x":640,"y":365,"scale":1,"rotation":0,"opacity":1,"entrance":0.65,"accent":"#7658d6","title":"Trace failures instantly"},"schema":{"x":[0,1280,1],"y":[0,720,1],"scale":[0.2,2,0.01],"rotation":[-20,20,0.1],"opacity":[0,1,0.01],"entrance":[0.1,2,0.01],"accent":"color","title":"text"}},
+    {"id":"final-message","name":"Final message","type":"text","shotId":"payoff","source":{"file":"engine/src/scenes.js","symbol":"drawPayoff"},"controls":{"x":640,"y":380,"scale":1,"rotation":0,"opacity":1,"text":"BRIEF IN. MOTION OUT.","entrance":0.75,"color":"#13203f"},"schema":{"x":[0,1280,1],"y":[0,720,1],"scale":[0.2,3,0.01],"rotation":[-180,180,1],"opacity":[0,1,0.01],"text":"text","entrance":[0.1,2,0.01],"color":"color"}}
+  ],
+  "token": {"id":"journey-ribbon","color":"#f55372","width":14,"samples":120,"morphWindow":0.38,"states":["signal","smile","orbit","trace","mark"]},
+  "variants": [
+    {"id":"en","label":"EN","locale":"en","copy":{}},
+    {"id":"nl","label":"NL","locale":"nl","copy":{
+      "hero-title.text":"IDEE \u2192 BEWEGING",
+      "final-message.text":"BRIEF IN. BEWEGING UIT.",
+      "dashboard.title":"Vind fouten direct"
+    }}
+  ],
+  "audio": {
+    "notes": "Voiceover scratch track. Cues hang off spoken words so a re-recorded line only needs new word timings.",
+    "transcript": [
+      {"id":"w1","text":"one","start":0.6,"end":0.9},
+      {"id":"w2","text":"line","start":0.9,"end":1.2},
+      {"id":"w3","text":"five","start":1.3,"end":1.6},
+      {"id":"w4","text":"worlds","start":1.6,"end":2.0},
+      {"id":"w5","text":"draw","start":2.45,"end":2.75},
+      {"id":"w6","text":"it","start":2.75,"end":2.95},
+      {"id":"w7","text":"live","start":2.95,"end":3.3},
+      {"id":"w8","text":"seeded","start":4.7,"end":5.0},
+      {"id":"w9","text":"every","start":5.0,"end":5.3},
+      {"id":"w10","text":"frame","start":5.3,"end":5.7},
+      {"id":"w11","text":"click","start":6.78,"end":7.0},
+      {"id":"w12","text":"once","start":7.0,"end":7.3},
+      {"id":"w13","text":"trace","start":7.3,"end":7.6},
+      {"id":"w14","text":"brief","start":8.4,"end":8.7},
+      {"id":"w15","text":"in","start":8.7,"end":8.9},
+      {"id":"w16","text":"motion","start":8.9,"end":9.4},
+      {"id":"w17","text":"out","start":9.4,"end":9.7}
+    ],
+    "cues": [
+      {"id":"hook-cue","label":"hook","kind":"word","anchor":"w2","offset":0.1},
+      {"id":"step-cue","label":"step","kind":"word","anchor":"w7","offset":0.15},
+      {"id":"orbit-cue","label":"orbit","kind":"word","anchor":"w10","offset":0.05},
+      {"id":"click-cue","label":"click","kind":"word","anchor":"w12","offset":0.12},
+      {"id":"payoff-cue","label":"payoff","kind":"word","anchor":"w16","offset":0.2}
+    ]
+  },
+  "production": {
+    "layers": ["cached-paper","cached-object-identity","dynamic-deformation","persistent-token","foreground-treatment"],
+    "qa": ["determinism","temporal-stability","timeline-continuity","source-mapping","transition-strips"],
+    "assetPolicy": "Only original, licensed, or user-supplied assets."
+  }
+}

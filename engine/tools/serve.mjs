@@ -1,0 +1,5 @@
+import http from 'node:http'; import { readFile, stat } from 'node:fs/promises'; import { extname, join, normalize, resolve } from 'node:path'; import { fileURLToPath } from 'node:url';
+const root = resolve(fileURLToPath(new URL('../', import.meta.url))); const port = Number(process.env.PORT || 4173);
+const mime={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.json':'application/json','.css':'text/css','.png':'image/png'};
+const server=http.createServer(async(req,res)=>{try{const raw=decodeURIComponent(req.url.split('?')[0]); const rel=raw==='/'?'index.html':raw.replace(/^\//,''); const path=normalize(join(root,rel)); if(!path.startsWith(normalize(root))) throw new Error('bad path'); const s=await stat(path); if(s.isDirectory())throw new Error('directory'); res.setHeader('Content-Type',mime[extname(path)]||'application/octet-stream');res.end(await readFile(path));}catch{res.statusCode=404;res.end('Not found')}});
+server.listen(port,()=>console.log(`MotionLoom Studio: http://localhost:${port}`));

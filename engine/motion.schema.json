@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MotionLoom project",
+  "description": "Canonical contract motionloom/1 (engine/data/project.json). Legacy preview shape (engine/project.motion.json with canvas + objects-as-map) is accepted by tooling and normalized immutably via engine/src/project-contract.js.",
+  "type": "object",
+  "required": ["meta", "shots", "objects"],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["width", "height", "fps", "duration", "seed"],
+      "properties": {
+        "title": { "type": "string" },
+        "width": { "type": "number" },
+        "height": { "type": "number" },
+        "fps": { "type": "number" },
+        "duration": { "type": "number" },
+        "seed": { "type": "number" },
+        "loop": { "type": "boolean" },
+        "renderContract": { "type": "string" },
+        "version": { "type": "string" }
+      }
+    },
+    "canvas": {
+      "type": "object",
+      "description": "Legacy alias of meta; accepted, then normalized.",
+      "required": ["width", "height", "fps", "duration", "seed"]
+    },
+    "palette": { "type": "object" },
+    "brand": { "type": "object" },
+    "shots": { "type": "array" },
+    "objects": {
+      "description": "Canonical form is an array; legacy map form is accepted, then normalized.",
+      "anyOf": [{ "type": "array" }, { "type": "object" }]
+    },
+    "token": { "type": "object" },
+    "story": { "type": "object" },
+    "audio": { "type": "object" },
+    "production": { "type": "object" },
+    "cues": { "type": "array" }
+  }
+}

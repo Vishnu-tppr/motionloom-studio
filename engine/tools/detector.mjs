@@ -1,0 +1,6 @@
+import fs from'node:fs';import path from'node:path';
+const root=path.resolve(process.cwd()),files=[];function walk(dir){for(const entry of fs.readdirSync(dir,{withFileTypes:true})){if(['node_modules','out','.git'].includes(entry.name))continue;const p=path.join(dir,entry.name);entry.isDirectory()?walk(p):/\.(js|mjs)$/.test(entry.name)&&files.push(p)}}walk(path.join(root,'engine'));
+const RENDER_DIRS=['src','test'];
+const isRenderFile=f=>RENDER_DIRS.some(d=>f.split(path.sep).includes(d));
+const findings=[];for(const file of files){if(!isRenderFile(file))continue;const lines=fs.readFileSync(file,'utf8').split('\n');lines.forEach((lineText,idx)=>{const text=lineText.replace(/\/\/.*$/,'');for(const [pattern,code,message] of [[/Math\.random\s*\(/g,'UNSEEDED_RANDOM','Use seeded rng() in render code'],[/Date\.now\s*\(/g,'WALL_CLOCK','Wall-clock time breaks deterministic frames'],[/setInterval\s*\(/g,'FRAME_ACCUMULATION','Avoid interval-driven render state']]){for(const match of text.matchAll(pattern)){findings.push({file:path.relative(root,file),line:idx+1,code,message})}}})}
+if(findings.length){console.error(JSON.stringify(findings,null,2));process.exit(1)}console.log(`detector: ${files.length} files checked; deterministic-source rules passed`);

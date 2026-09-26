@@ -1,0 +1,2 @@
+import fs from'node:fs';import path from'node:path';import{execFileSync}from'node:child_process';
+const files=[];function walk(dir){for(const e of fs.readdirSync(dir,{withFileTypes:true})){if(['node_modules','out'].includes(e.name))continue;const p=path.join(dir,e.name);e.isDirectory()?walk(p):/\.(js|mjs)$/.test(e.name)&&files.push(p)}}walk('engine');for(const f of files)execFileSync(process.execPath,['--check',f],{stdio:'pipe'});console.log(`lint: ${files.length} JavaScript files parsed successfully`);
