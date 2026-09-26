@@ -1,0 +1,50 @@
+{
+  "name": "motionloom-studio",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Deterministic JavaScript motion graphics, character animation & SaaS product launch video engine for Claude Code. Powered by p5.js, spring physics, and headless 60fps MP4 export.",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "motion-graphics",
+    "javascript-animation",
+    "p5js",
+    "canvas-animation",
+    "generative-art",
+    "saas-launch-video",
+    "remotion",
+    "creative-coding",
+    "spring-physics",
+    "procedural-animation",
+    "kinetic-typography",
+    "video-generator",
+    "claude-plugin",
+    "headless-rendering",
+    "puppeteer",
+    "bento-grid",
+    "svg-animation"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "node engine/tools/serve.mjs",
+    "check": "node engine/tools/check.mjs",
+    "test": "node --test engine/test/*.test.mjs && npm run check",
+    "contact": "node engine/tools/render.mjs --sheet=0.5,2.5,4.5,6.5,8.5 --out=out/contact.png",
+    "strip": "node engine/tools/render.mjs --strip=3.5:4.5 --out=out/strip.png",
+    "still": "node engine/tools/render.mjs --still=4.5 --out=out/still.png",
+    "video": "node engine/tools/render.mjs --video --out=out/video.mp4",
+    "live": "node engine/server.mjs",
+    "live:poll": "node engine/tools/live-agent.mjs poll",
+    "live:status": "node engine/tools/live-agent.mjs status"
+  },
+  "dependencies": {
+    "p5": "^2.3.3",
+    "p5.brush": "^2.2.3",
+    "puppeteer-core": "24.16.2",
+    "ws": "^8.18.0",
+    "yauzl": "3.2.0"
+  }
+}
