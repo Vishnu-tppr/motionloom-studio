@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MotionLoom Studio</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0b0f1f;
+      --bg-soft: #11162a;
+      --panel: #0f1430;
+      --border: #2a3155;
+      --text: #f5f5f7;
+      --text-dim: #aab0c9;
+      --accent: #7c6af5;
+      --accent-hover: #6a56e6;
+      --accent-soft: rgba(124, 106, 245, 0.15);
+      --highlight: #18b7c9;
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+      --radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(1200px 600px at 10% -10%, #171d3a 0%, transparent 60%),
+        radial-gradient(900px 500px at 110% 10%, #1a1f3f 0%, transparent 55%),
+        var(--bg);
+      color: var(--text);
+      font: 14px/1.45 Inter, system-ui, -apple-system, sans-serif;
+      display: grid;
+      place-items: center;
+      min-height: 100vh;
+      padding: 24px 16px 40px;
+    }
+
+    .shell {
+      width: min(96vw, 1200px);
+    }
+
+    header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-size: 18px;
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: -0.01em;
+      color: #ffd26b;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    h1 small {
+      font-weight: 500;
+      font-size: 12px;
+      color: var(--text-dim);
+      letter-spacing: 0;
+    }
+
+    .stage {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #000;
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+
+    canvas {
+      display: block;
+      width: 100% !important;
+      height: auto !important;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 14px;
+      align-items: center;
+      padding: 14px 0 6px;
+    }
+
+    button {
+      appearance: none;
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.01em;
+      color: #fff;
+      background: linear-gradient(180deg, var(--accent) 0%, var(--accent-hover) 100%);
+      box-shadow:
+        0 8px 20px rgba(124, 106, 245, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      cursor: pointer;
+      transition: transform 0.06s ease, filter 0.15s ease, opacity 0.15s ease;
+      white-space: nowrap;
+    }
+
+    button:hover {
+      filter: brightness(1.05);
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    button.paused {
+      background: linear-gradient(180deg, #4b557a 0%, #3a4266 100%);
+      box-shadow:
+        0 6px 16px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .slider-wrap {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent-soft), var(--accent-soft));
+      outline: none;
+      border: 1px solid var(--border);
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #ffffff, #cfd3ff 40%, var(--accent) 41%);
+      border: 0;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+      cursor: pointer;
+      transition: transform 0.06s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.07);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #ffffff, #cfd3ff 40%, var(--accent) 41%);
+      border: 0;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+      cursor: pointer;
+    }
+
+    .readout {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      color: var(--highlight);
+      background: rgba(24, 183, 201, 0.08);
+      border: 1px solid rgba(24, 183, 201, 0.25);
+      border-radius: 8px;
+      padding: 6px 10px;
+      min-width: 72px;
+      text-align: right;
+      user-select: none;
+    }
+
+    .hint {
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--text-dim);
+      opacity: 0.9;
+    }
+
+    .hint code {
+      color: #9ae0ff;
+      background: rgba(154, 224, 255, 0.08);
+      border: 1px solid rgba(154, 224, 255, 0.2);
+      border-radius: 6px;
+      padding: 2px 6px;
+      font-size: 11px;
+    }
+
+    @media (max-width: 560px) {
+      .controls {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      button {
+        width: 100%;
+      }
+
+      .readout {
+        justify-self: end;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="shell">
+    <header>
+      <h1>
+        MotionLoom Studio
+        <small>— deterministic p5.js preview</small>
+      </h1>
+    </header>
+
+    <div id="canvas-wrap" class="stage"></div>
+
+    <div class="controls">
+      <button id="play" type="button">Pause</button>
+
+      <div class="slider-wrap">
+        <input id="time" type="range" min="0" max="10" step="0.001" value="0" aria-label="Timeline scrubber" />
+      </div>
+
+      <div id="readout" class="readout" aria-live="polite">0.00s</div>
+    </div>
+
+    <div class="hint">
+      Tip: Drag the slider to scrub. Use <code>Space</code> to toggle play/pause.
+    </div>
+  </main>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "p5": "../node_modules/p5/lib/p5.esm.js"
+      }
+    }
+  </script>
+
+  <script type="module" src="./src/main.js"></script>
+
+  <script type="module">
+    const slider = document.querySelector('#time');
+    const button = document.querySelector('#play');
+    const readout = document.querySelector('#readout');
+
+    let playing = true;
+
+    function updateButton() {
+      button.textContent = playing ? 'Pause' : 'Play';
+      button.classList.toggle('paused', !playing);
+    }
+
+    button.addEventListener('click', () => {
+      playing = !playing;
+      updateButton();
+      if (window.__motionloom) {
+        window.__motionloom.p.loop();
+      }
+    });
+
+    slider.addEventListener('input', () => {
+      if (window.__motionloom) {
+        window.__motionloom.setTime(parseFloat(slider.value));
+      }
+    });
+
+    // Optional: spacebar toggles play/pause
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        button.click();
+      }
+    });
+
+    window.addEventListener('motionloom-frame', (e) => {
+      const t = e.detail.time;
+      if (playing) {
+        slider.value = t;
+      }
+      readout.textContent = t.toFixed(2) + 's';
+    });
+
+    // Initialize button state
+    updateButton();
+  </script>
+</body>
+</html>
