@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Follow a little wonder</title>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100svh;background:#183c46;color:#f4ebd8;display:flex;flex-direction:column;align-items:center;justify-content:center;font:14px system-ui,sans-serif}
+canvas{display:block;width:min(100vw,calc(100svh - 68px));height:auto}
+footer{height:68px;display:flex;align-items:center;gap:14px;width:min(90vw,550px)}
+button{font:inherit;color:inherit;background:transparent;border:1px solid #77908c;border-radius:6px;padding:7px 12px;cursor:pointer;min-width:72px}
+button:hover{background:#31555e}input{flex:1;min-width:40px;accent-color:#e77578}button:focus-visible,input:focus-visible{outline:2px solid #f2ca62;outline-offset:3px}
+</style>
+<canvas id="art" width="1080" height="1080" aria-label="An animated print illustration: pink steam above a cup stretches into a river, then becomes the tail of a flying kite."></canvas>
+<footer><button id="play" type="button">Pause</button><input id="time" type="range" min="0" max="15" step="0.01" value="0" aria-label="Animation position"><button id="replay" type="button">Replay</button></footer>
+<script>
+// Original procedural motion study. All artwork is created by this program.
+// No downloaded images, media, libraries, fonts or network connections.
+// The same sampled ribbon changes shape and width across all three scenes.
+const canvas=document.getElementById('art'),c=canvas.getContext('2d');
+const W=1080,TAU=Math.PI*2,DURATION=15;
+const P={paper:'#f4ecd9',ink:'#153f4a',coral:'#df596c',gold:'#eab844',sage:'#b2beb0',light:'#eee0bf'};
+const clamp=x=>Math.max(0,Math.min(1,x));
+const ease=x=>{x=clamp(x);return x*x*x*(x*(x*6-15)+10)};
+const mix=(a,b,t)=>a+(b-a)*t;
+let seed=308;
+function rnd(){seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296}
+function surface(w,h){let a=document.createElement('canvas');a.width=w;a.height=h;return a;}
+function path(fn){let p=new Path2D();fn(p);return p;}
+const dots=surface(9,9),dc=dots.getContext('2d');
+dc.fillStyle=P.ink;dc.beginPath();dc.arc(2.5,2.5,1.35,0,TAU);dc.fill();
+const dotPattern=c.createPattern(dots,'repeat');
+const lines=surface(12,12),lc=lines.getContext('2d');
+lc.strokeStyle=P.ink;lc.lineWidth=1;lc.beginPath();lc.moveTo(0,12);lc.lineTo(12,0);lc.stroke();
+const linePattern=c.createPattern(lines,'repeat');
+function paint(p,color,texture=.2,hatch=false){
+  c.fillStyle=color;c.fill(p);
+  if(texture){c.save();c.clip(p);c.globalAlpha*=texture;c.fillStyle=hatch?linePattern:dotPattern;c.fillRect(-1500,-1500,4000,4000);c.restore()}
+}
+function line(p,color,width=2){c.strokeStyle=color;c.lineWidth=width;c.lineCap='round';c.lineJoin='round';c.stroke(p)}
+function ellipse(x,y,rx,ry,color,texture=.2){paint(path(p=>p.ellipse(x,y,rx,ry,0,0,TAU)),color,texture)}
+function poly(points,color,texture=.2){paint(path(p=>{points.forEach(([x,y],i)=>i?p.lineTo(x,y):p.moveTo(x,y));p.closePath()}),color,texture)}
+function label(txt,x,y,size,color=P.ink,italic=false){c.fillStyle=color;c.font=`${italic?'italic ':''}${size}px Georgia,serif`;c.fillText(txt,x,y)}
+// Fixed paper fibres and pigment: cached, so they never regenerate and flicker.
+const paper=surface(W,W),pc=paper.getContext('2d');
+for(let i=0;i<67000;i++){
+  pc.fillStyle=rnd()>.4?`rgba(21,63,74,${.025+rnd()*.09})`:`rgba(255,255,244,${.08+rnd()*.18})`;
+  pc.fillRect(rnd()*W,rnd()*W,.5+rnd()*1.4,.5+rnd()*1.4);
+}
+const stars=Array.from({length:24},()=>({x:rnd()*W,y:70+rnd()*590,r:2+rnd()*3}));
+
+function leaf(x,y,length,width,angle,color){
+  c.save();c.translate(x,y);c.rotate(angle);
+  const p=path(p=>{p.moveTo(0,0);p.bezierCurveTo(-width,-length*.3,-width*.7,-length*.85,0,-length);p.bezierCurveTo(width*.8,-length*.75,width,-length*.25,0,0)});
+  paint(p,color,.27,true);line(path(p=>{p.moveTo(0,0);p.quadraticCurveTo(5,-length*.5,0,-length*.9)}),P.paper,1.8);c.restore();
+}
+function plant(t,amount){
+  if(amount<.001)return;
+  c.save();c.translate(-220*(1-amount),150*(1-amount));c.rotate(-.025*Math.sin(t));
+  line(path(p=>{p.moveTo(89,1100);p.bezierCurveTo(155,820,75,635,156,460)}),P.ink,7);
+  for(let j=0;j<7;j++){
+    const yy=510+j*76,xx=120+18*Math.sin(j);
+    leaf(xx,yy,120+j*5,32+(j%2)*13,(j%2?1:-1)*.94,P.ink);
+  }
+  c.restore();
+}
+function cloud(x,y,s,t){
+ c.save();c.translate(x,y);c.scale(s,s);
+ paint(path(p=>{p.moveTo(-140,25);p.bezierCurveTo(-176,-2,-130,-35,-94,-25);p.bezierCurveTo(-103,-90,-10,-102,13,-59);p.bezierCurveTo(59,-94,116,-55,109,-18);p.bezierCurveTo(175,-23,176,28,127,28);p.closePath()}),P.paper,.13);
+ line(path(p=>{p.moveTo(-114,41);p.quadraticCurveTo(0,57,107,40)}),P.ink,1.3);c.restore();
+}
+function sun(t,a,b){
+  const x=mix(790,238,b),y=mix(mix(247,238,a),256,b),r=mix(146,119,b);
+  c.save();c.translate(x,y);c.rotate(.025*t);
+  for(let j=0;j<32;j++){
+    const q=j*TAU/32;
+    line(path(p=>{p.moveTo(Math.cos(q)*(r+14),Math.sin(q)*(r+14));p.lineTo(Math.cos(q)*(r+28+6*Math.sin(j)),Math.sin(q)*(r+28+6*Math.sin(j)))}),P.gold,2.2);
+  }
+  ellipse(0,0,r,r,P.gold,.27);
+  c.restore();
+}
+// The tabletop's initially straight edge bends into a landscape ridge.
+function landscape(t,a,b){
+  const fall=b*850;
+  const ridge=(base,amp,freq,phase,color)=>{
+    const p=path(p=>{p.moveTo(-30,1200+fall);
+      for(let x=-30;x<=1110;x+=12){
+        const riverY=base+amp*Math.sin(x*freq+phase)+22*Math.sin(x*.014+phase);
+        p.lineTo(x,mix(780,riverY,a)+fall);
+      }p.lineTo(1110,1200+fall);p.closePath();});
+    paint(p,color,.3);
+  };
+  ridge(438,60,.006,1.8,P.sage);
+  ridge(576,80,.005,-1,P.gold);
+  ridge(710,72,.006,.5,P.ink);
+  // Tablecloth stripes contract into contour lines during the transition.
+  c.save();c.globalAlpha=1-a;
+  for(let j=0;j<19;j++)line(path(p=>{p.moveTo(-200+j*91,795);p.lineTo(-420+j*125,1200)}),P.paper,4);
+  c.restore();
+  if(a>.001){
+    c.save();c.globalAlpha=a;
+    for(let band=0;band<9;band++){
+      const p=path(p=>{for(let x=-20;x<=1100;x+=10){let y=785+band*26+44*Math.sin(x*.006+band*.08)+fall;x===-20?p.moveTo(x,y):p.lineTo(x,y)}});
+      line(p,band%2?P.gold:P.paper,1.1);
+    }
+    c.restore();
+  }
+}
+function cup(t,a){
+  if(a>=1)return;
+  c.save();c.translate(540,740+a*570);c.scale(1+a*.55,1+a*.55);c.rotate(-.035*Math.sin(t*.7)*(1-a));
+  ellipse(0,103,234,40,P.paper,.2);ellipse(0,95,206,26,P.gold,.3);
+  // Handle first; its cutout is a paper-coloured shape, then the cup covers it.
+  ellipse(147,-9,84,75,P.coral,.2);ellipse(147,-11,47,43,P.paper,.13);
+  const body=path(p=>{p.moveTo(-149,-85);p.lineTo(-129,41);p.bezierCurveTo(-116,128,106,136,128,40);p.lineTo(150,-85);p.closePath()});
+  paint(body,P.coral,.27);
+  c.save();c.clip(body);
+  for(let j=0;j<8;j++)line(path(p=>{p.moveTo(-121+j*35,-75);p.bezierCurveTo(-118+j*35,-10,-102+j*32,47,-100+j*33,94)}),P.paper,2);
+  c.restore();ellipse(0,-85,151,45,P.paper,.18);ellipse(0,-84,128,29,P.ink,.25);
+  line(path(p=>p.ellipse(-3,-86,155,47,0,0,TAU)),P.ink,2);
+  ellipse(-36,-86,40,9,P.gold,.15);c.restore();
+}
+function tree(x,y,s,angle=0){
+  c.save();c.translate(x,y);c.rotate(angle);c.scale(s,s);
+  line(path(p=>{p.moveTo(0,5);p.lineTo(0,-131)}),P.ink,6);
+  for(let j=0;j<4;j++)poly([[0,-154+j*29],[-29-j*10,-88+j*29],[32+j*10,-88+j*29]],P.ink,.1);
+  line(path(p=>{p.moveTo(-2,-143);p.lineTo(-2,-7)}),P.gold,1.2);c.restore();
+}
+function trees(t,a,b){
+  const s=ease((a-.25)/.75);if(s<.001)return;
+  for(let j=0;j<14;j++){
+    const x=40+j*79,y=790+78*Math.sin(j*.8)+b*760;
+    // Leave the middle of the image free for the river.
+    if(x>400&&x<690)continue;
+    tree(x,y,s*(.78+(j%3)*.14),.025*Math.sin(t+j));
+  }
+}
+// Interpolate corresponding points: real shape morphing, not scene crossfades.
+function ribbonPoint(u,t,a,b){
+  const steam={x:540+26*Math.sin(u*10-t*1.8)*Math.sin(Math.PI*u),y:648-455*u};
+  const river={x:570+165*Math.sin(u*6.8+.7)*(1-u)+18*Math.sin(t*.7+u*5)*(1-u),y:1160-767*u};
+  const kite={x:mix(355,733,u)+92*Math.sin(u*7.2-t*1.4)*(1-u),y:1030-651*u};
+  return {x:mix(mix(steam.x,river.x,a),kite.x,b),y:mix(mix(steam.y,river.y,a),kite.y,b)};
+}
+function ribbon(t,a,b){
+  const n=200,points=[];
+  for(let i=0;i<=n;i++){
+    const u=i/n,pt=ribbonPoint(u,t,a,b);
+    const width=mix(mix(8+5*Math.sin(u*Math.PI),2+152*(1-u)**1.5,a),6+5*(1-u),b);
+    const next=ribbonPoint(Math.min(1,u+.003),t,a,b),prev=ribbonPoint(Math.max(0,u-.003),t,a,b);
+    const dx=next.x-prev.x,dy=next.y-prev.y,len=Math.hypot(dx,dy)||1;
+    points.push({...pt,nx:-dy/len,ny:dx/len,width});
+  }
+  const shape=path(p=>{points.forEach((q,i)=>{let x=q.x+q.nx*q.width,y=q.y+q.ny*q.width;i?p.lineTo(x,y):p.moveTo(x,y)});[...points].reverse().forEach(q=>p.lineTo(q.x-q.nx*q.width,q.y-q.ny*q.width));p.closePath()});
+  paint(shape,P.coral,.3);
+  const seam=path(p=>{points.forEach((q,i)=>{let x=q.x+q.nx*q.width*.43,y=q.y+q.ny*q.width*.43;i?p.lineTo(x,y):p.moveTo(x,y)})});
+  line(seam,P.paper,mix(2,3,a)*(1-b*.6));
+  // River ripples shrink away as it becomes the kite's thin tail.
+  c.save();c.globalAlpha=a*(1-b);
+  for(let j=0;j<15;j++){
+    let u=.08+j*.051,q=points[Math.floor(u*n)];
+    line(path(p=>{p.moveTo(q.x-q.width*.52,q.y+2*Math.sin(t+j));p.lineTo(q.x+q.width*.2,q.y-4)}),P.paper,2);
+  }
+  c.restore();
+  // Bows open along the ribbon as the kite takes shape.
+  if(b>.001){for(let j=0;j<6;j++){
+    const u=.18+j*.115,q=points[Math.floor(u*n)],s=b*(18+j);
+    c.save();c.translate(q.x,q.y);c.rotate(.3*Math.sin(t*1.5+j));
+    poly([[0,0],[-s,-s*.7],[-s,s*.7]],j%2?P.gold:P.ink,.27);
+    poly([[0,0],[s,-s*.7],[s,s*.7]],j%2?P.gold:P.ink,.27);c.restore();
+  }}
+}
+function boat(t,a,b){
+  const visibility=ease((a-.7)/.3)*(1-ease(b*2));if(visibility<.001)return;
+  const q=ribbonPoint(.44,t,a,b);
+  c.save();c.translate(q.x,q.y);c.rotate(-.13+.035*Math.sin(t*2));c.scale(visibility,visibility);
+  poly([[-44,0],[50,0],[28,21],[-25,20]],P.paper,.2);
+  line(path(p=>{p.moveTo(0,0);p.lineTo(0,-93)}),P.paper,4);
+  poly([[-5,-87],[-5,-8],[-57,-8]],P.gold,.2);
+  poly([[6,-66],[6,-8],[38,-8]],P.paper,.2);c.restore();
+}
+function kite(t,a,b){
+  if(b<.001)return;
+  const q=ribbonPoint(1,t,a,b);
+  c.save();c.translate(q.x,q.y);c.rotate(.09*Math.sin(t*1.2));c.scale(b,b);
+  const left=[-121,-151],top=[0,-310],right=[121,-151],bottom=[0,0],centre=[0,-151];
+  poly([bottom,left,centre],P.ink,.25);poly([left,top,centre],P.gold,.35);
+  poly([top,right,centre],P.coral,.28);poly([right,bottom,centre],P.paper,.26,true);
+  line(path(p=>{p.moveTo(0,0);p.lineTo(0,-310);p.moveTo(-121,-151);p.lineTo(121,-151)}),P.ink,3);
+  line(path(p=>{p.moveTo(4,0);p.lineTo(4,-310)}),P.paper,1.5);
+  line(path(p=>{p.moveTo(-121,-151);p.lineTo(0,-310);p.lineTo(121,-151);p.lineTo(0,0);p.closePath()}),P.ink,2);
+  c.restore();
+}
+function birds(t,b){
+ if(b<.001)return;
+ c.save();c.globalAlpha=b;
+ for(let j=0;j<4;j++){
+  const x=70+j*255+36*Math.sin(t*.5+j),y=160+j%2*340;
+  const flap=10+8*Math.sin(t*3+j);
+  line(path(p=>{p.moveTo(x-20,y-flap);p.quadraticCurveTo(x-9,y-12,x,y);p.quadraticCurveTo(x+12,y-11,x+23,y-flap+3)}),P.ink,3);
+ }c.restore();
+}
+function renderAt(t){
+  t=Math.max(0,Math.min(DURATION,t));
+  const a=ease((t-3)/2.3),b=ease((t-8)/2.4),end=ease((t-12.3)/1.5);
+  c.save();c.scale(canvas.width/W,canvas.height/W);c.fillStyle=P.paper;c.fillRect(0,0,W,W);
+  // A slow camera push unifies the transformation while keeping its centre fixed.
+  const zoom=1+.035*Math.sin(Math.PI*t/DURATION);
+  c.save();c.translate(540,540);c.scale(zoom,zoom);c.translate(-540,-540);
+  sun(t,a,b);
+  c.save();c.globalAlpha=.12;
+  for(const s of stars)ellipse(s.x,s.y,s.r,s.r,P.ink,0);
+  c.restore();
+  const cloudVisibility=a;
+  c.save();c.globalAlpha=cloudVisibility;
+  cloud(270+17*Math.sin(t*.3),mix(324,434,b),1.3,t);
+  cloud(916+19*Math.cos(t*.3),mix(423,655,b),.82,t);
+  c.restore();
+  landscape(t,a,b);plant(t,1-a);trees(t,a,b);
+  cup(t,a);ribbon(t,a,b);boat(t,a,b);kite(t,a,b);birds(t,b);
+  c.restore();
+  c.drawImage(paper,0,0);
+  // Typography arrives only at the end; the scenes themselves stay uninterrupted.
+  if(end>0){
+    c.save();c.globalAlpha=end;
+    label('Follow a',80,640+20*(1-end),64,P.ink,true);
+    label('little wonder.',80,718+20*(1-end),64,P.ink,true);
+    c.font='14px sans-serif';c.letterSpacing='3px';c.fillStyle=P.ink;c.fillText('A SMALL JOURNEY IN THREE INKS',84,773+20*(1-end));
+    c.restore();
+  }
+  c.strokeStyle='rgba(21,63,74,.35)';c.lineWidth=1;c.strokeRect(28.5,28.5,1023,1023);
+  c.restore();
+}
+const play=document.getElementById('play'),scrub=document.getElementById('time'),replay=document.getElementById('replay');
+let elapsed=0,last=null,playing=!window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function sync(){play.textContent=playing?'Pause':elapsed>=DURATION?'Play again':'Play';scrub.value=elapsed}
+play.addEventListener('click',()=>{if(elapsed>=DURATION)elapsed=0;playing=!playing;last=null;sync()});
+replay.addEventListener('click',()=>{elapsed=0;playing=true;last=null;renderAt(0);sync()});
+scrub.addEventListener('input',()=>{elapsed=Number(scrub.value);playing=false;renderAt(elapsed);last=null;sync()});
+function tick(now){
+ if(last!==null&&playing){elapsed=Math.min(DURATION,elapsed+Math.min((now-last)/1000,.1));renderAt(elapsed);if(elapsed===DURATION)playing=false;sync()}
+ last=now;window.requestAnimationFrame(tick);
+}
+renderAt(0);sync();window.requestAnimationFrame(tick);window.renderAt=renderAt;window.duration=DURATION;
+</script>
+</html>

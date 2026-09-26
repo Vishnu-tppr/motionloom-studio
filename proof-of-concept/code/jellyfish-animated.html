@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>After the light — animated in JavaScript</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;background:#061c2a;color:#b9d2d2;font:14px system-ui,sans-serif}
+body{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center}
+canvas{display:block;width:min(100vw,calc(100svh - 66px));height:auto}
+footer{height:66px;display:flex;align-items:center;justify-content:center;gap:22px}
+button{font:inherit;background:#13394a;color:#e9e3df;border:1px solid #426574;border-radius:7px;padding:8px 18px;cursor:pointer}
+button:hover{background:#214b5c}button:focus-visible{outline:2px solid #ffc5d2;outline-offset:3px}
+span{font-size:12px;letter-spacing:.025em}
+</style>
+<canvas id="art" width="1200" height="1200" aria-label="Three luminous pink jellyfish gently drifting, pulsing and trailing their tentacles through dark blue water.">An animated jellyfish illustration.</canvas>
+<footer><button id="toggle" type="button" aria-pressed="false">Pause</button><span>A drawing made with JavaScript</span></footer>
+<script>
+// Every image used below is drawn by this code on startup. No imported media,
+// libraries, network requests or AI services are needed to play this animation.
+const canvas=document.getElementById('art');
+const main=canvas.getContext('2d');
+let ctx=main;
+const W=1200,H=1200,TAU=Math.PI*2,LOOP=12;
+function surface(w,h){const c=document.createElement('canvas');c.width=w;c.height=h;return c;}
+let seed=1847;
+function random(){seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;}
+function dot(x,y,r,color){ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();}
+function stroke(points,color,width){ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.strokeStyle=color;ctx.lineWidth=width;ctx.stroke();}
+
+
+// Render the expensive, unchanging marks once and reuse them every frame.
+const backdrop=surface(W,H);ctx=backdrop.getContext('2d');
+// Deep-water background, with a soft shaft of light.
+const sea=ctx.createLinearGradient(0,0,W,H);
+sea.addColorStop(0,'#174b60');sea.addColorStop(.5,'#092b40');sea.addColorStop(1,'#071525');
+ctx.fillStyle=sea;ctx.fillRect(0,0,W,H);
+const light=ctx.createRadialGradient(280,180,0,340,270,780);
+light.addColorStop(0,'rgba(55,147,153,.25)');light.addColorStop(1,'rgba(24,73,96,0)');
+ctx.fillStyle=light;ctx.fillRect(0,0,W,H);
+for(let j=0;j<14;j++){
+  ctx.beginPath();ctx.moveTo(90+j*42,0);ctx.lineTo(580+j*40,1400);ctx.lineTo(360+j*38,1400);ctx.closePath();
+  ctx.fillStyle='rgba(98,192,192,.009)';ctx.fill();
+}
+// Suspended particles: one rule generates thousands of different marks.
+for(let i=0;i<6200;i++){
+  const x=random()*W,y=random()*H,r=.25+random()*1.2;
+  dot(x,y,r,`rgba(133,211,209,${.02+random()*.2})`);
+}
+
+
+const lettering=surface(W,H);ctx=lettering.getContext('2d');
+// A final thin layer of grain ties the illustration together.
+for(let i=0;i<45000;i++){
+  const v=random()>.5?'255,227,208':'0,6,24';
+  ctx.fillStyle=`rgba(${v},${.015+random()*.045})`;
+  ctx.fillRect(random()*W,random()*H,1,1);
+}
+// Quiet specimen-plate typography and border, also drawn on the canvas.
+ctx.strokeStyle='rgba(174,214,210,.3)';ctx.lineWidth=1;ctx.strokeRect(38.5,38.5,1123,1123);
+ctx.fillStyle='#a3c8ca';ctx.font='13px sans-serif';ctx.letterSpacing='3px';
+ctx.fillText('PELAGIC STUDIES',76,92);
+ctx.textAlign='right';ctx.fillText('PLATE 01',1124,92);ctx.textAlign='left';
+ctx.fillStyle='#f0dcd6';ctx.font='italic 43px Georgia,serif';ctx.letterSpacing='0px';ctx.fillText('After the light',76,1079);
+ctx.fillStyle='#9bbcc1';ctx.font='14px sans-serif';ctx.fillText('Curves, colour, and a little controlled randomness.',78,1110);
+
+function makeBell(id){
+  seed=id;
+  const sprite=surface(900,900);ctx=sprite.getContext('2d');
+  ctx.save();ctx.scale(1.5,1.5);ctx.translate(300,325);
+  // Light around the animal, using a transparent radial gradient.
+  const halo=ctx.createRadialGradient(0,-25,10,0,-25,300);
+  halo.addColorStop(0,'rgba(255,126,169,.16)');halo.addColorStop(1,'rgba(255,126,169,0)');
+  ctx.fillStyle=halo;ctx.fillRect(-300,-325,600,600);
+
+  // The bell is a custom curved outline, not an imported picture.
+  function bell(){
+    ctx.beginPath();ctx.moveTo(-177,24);
+    ctx.bezierCurveTo(-168,-77,-93,-160,0,-162);
+    ctx.bezierCurveTo(94,-163,168,-80,177,24);
+    ctx.bezierCurveTo(124,54,-117,57,-177,24);ctx.closePath();
+  }
+  const body=ctx.createLinearGradient(0,-170,0,65);
+  body.addColorStop(0,'rgba(255,217,218,.87)');body.addColorStop(.22,'rgba(246,130,171,.65)');
+  body.addColorStop(.72,'rgba(181,78,143,.27)');body.addColorStop(1,'rgba(255,158,171,.58)');
+  bell();ctx.fillStyle=body;ctx.fill();
+  ctx.save();bell();ctx.clip();
+  // Curved internal ribs and a cloud of stippled pigment.
+  for(let j=-10;j<=10;j++){
+    ctx.beginPath();ctx.moveTo(j*2,-158);
+    ctx.bezierCurveTo(j*8,-130,j*17,-63,j*16.5,44);
+    ctx.strokeStyle='rgba(255,218,213,.23)';ctx.lineWidth=1.3;ctx.stroke();
+  }
+  for(let i=0;i<4500;i++){
+    dot((random()-.5)*360,-165+random()*220,.25+random()*1.2,`rgba(255,219,211,${random()*.24})`);
+  }
+  // Four softly drawn internal loops.
+  for(let k=0;k<4;k++){
+    ctx.save();ctx.translate((k-1.5)*29,-22+Math.abs(k-1.5)*5);ctx.rotate((k-1.5)*.35);
+    ctx.beginPath();ctx.ellipse(0,0,23,39,0,0,Math.PI*2);ctx.strokeStyle='rgba(255,208,182,.5)';ctx.lineWidth=4;ctx.stroke();ctx.restore();
+  }
+  ctx.restore();
+  bell();ctx.strokeStyle='rgba(255,219,212,.74)';ctx.lineWidth=1.8;ctx.stroke();
+  // Scalloped luminous edge.
+  const edge=[];
+  for(let i=0;i<=280;i++){
+    const t=i/280;edge.push([-177+354*t,24+19*Math.sin(Math.PI*t)+3*Math.sin(t*Math.PI*32)]);
+  }
+  stroke(edge,'rgba(255,211,199,.95)',2.5);
+
+  ctx.restore();return sprite;
+}
+const animals=[
+ {x:912,y:652,size:.42,angle:.24,phase:1.9,id:127},
+ {x:245,y:775,size:.28,angle:-.23,phase:3.7,id:468},
+ {x:565,y:390,size:1.25,angle:-.15,phase:0,id:1847}
+];
+for(const a of animals){
+  a.bell=makeBell(a.id);seed=a.id;
+  // Generate each tentacle's identity only once, so it cannot flicker.
+  a.tentacles=Array.from({length:36},(_,j)=>({
+    root:(random()-.5)*280,length:210+random()*420,phase:random()*TAU,
+    color:`rgba(${j%3?255:123},${j%3?161:223},${j%3?190:227},${.19+random()*.4})`,width:.6+random()*1.5
+  }));
+  a.arms=Array.from({length:4},()=>310+random()*110);
+}
+ctx=main;seed=532;
+const motes=Array.from({length:65},()=>({x:random()*W,y:random()*H,r:.8+random()*1.6,p:random()*TAU}));
+
+function drawAnimal(a,seconds){
+  const slow=TAU*seconds/LOOP+a.phase;
+  const beat=TAU*seconds/3+a.phase;
+  const flow=TAU*seconds/6;
+  const bellWidth=1+.065*Math.sin(beat);
+  const bellHeight=1-.045*Math.sin(beat);
+  ctx.save();
+  // Small vertical kicks share the bell's rhythm; slower drift completes a loop.
+  ctx.translate(a.x+14*Math.sin(slow),a.y+17*Math.cos(slow)-7*Math.cos(beat));
+  ctx.rotate(a.angle+.035*Math.sin(slow));ctx.scale(a.size,a.size);
+  for(const f of a.tentacles){
+    const points=[];
+    for(let i=0;i<=100;i++){
+      const t=i/100;
+      // A wave travels down the length: the ends react later than the roots.
+      const sway=Math.sin(t*7+f.phase-flow)*(12+t*37);
+      const lag=12*t*Math.sin(beat-t*4);
+      points.push([f.root*bellWidth+sway+t*t*82+lag,20*bellHeight+t*f.length]);
+    }
+    stroke(points,f.color,f.width);
+  }
+  for(let arm=0;arm<4;arm++){
+    for(let i=0;i<210;i++){
+      const t=i/210,phase=arm*1.4;
+      const yy=18*bellHeight+t*a.arms[arm];
+      const xx=(arm-1.5)*37*bellWidth+Math.sin(t*8+phase-flow)*27+t*t*70+9*t*Math.sin(beat-t*4);
+      const width=(1-t)*22+4;
+      const ruffle=Math.sin(t*93+phase-flow)*width;
+      stroke([[xx-width*.4,yy-4],[xx+ruffle,yy],[xx+width*.6,yy+5]],`rgba(255,${146+Math.round(70*t)},192,.29)`,1.7);
+    }
+  }
+  // Rescale the already-drawn bell; its stippled texture stays attached to it.
+  ctx.scale(bellWidth,bellHeight);ctx.drawImage(a.bell,-300,-325,600,600);
+  ctx.restore();
+}
+function renderAt(seconds){
+  ctx=main;ctx.save();ctx.scale(canvas.width/W,canvas.height/H);
+  ctx.drawImage(backdrop,0,0);
+  for(const m of motes){
+    const p=TAU*seconds/LOOP+m.p;
+    dot(m.x+11*Math.sin(p),m.y+17*Math.cos(p),m.r,'rgba(171,224,218,.3)');
+  }
+  for(const a of animals)drawAnimal(a,seconds);
+  ctx.drawImage(lettering,0,0);ctx.restore();
+}
+// A small playback controller. Clamp the clock after a suspended browser tab.
+const button=document.getElementById('toggle');
+const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let playing=!reduceMotion,elapsed=0,last=null;
+function syncButton(){button.textContent=playing?'Pause':'Play';button.setAttribute('aria-pressed',String(!playing));}
+button.addEventListener('click',()=>{playing=!playing;syncButton();last=null;});
+function tick(now){
+  if(last!==null&&playing)elapsed=(elapsed+Math.min((now-last)/1000,.1))%LOOP;
+  last=now;
+  if(playing)renderAt(elapsed);
+  window.requestAnimationFrame(tick);
+}
+syncButton();renderAt(0);window.requestAnimationFrame(tick);
+// Exposed for an offline video export; the browser uses the same drawing code.
+window.renderAt=renderAt;
+window.drawingComplete=true;
+</script>
+</html>

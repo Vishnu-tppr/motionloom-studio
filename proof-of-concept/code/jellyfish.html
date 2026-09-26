@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>After the light — a JavaScript drawing</title>
+<style>
+html,body{margin:0;background:#061c2a;min-height:100%;display:grid;place-items:center}
+canvas{width:min(100vw,100vh);height:auto;display:block}
+</style>
+<canvas id="art" width="1200" height="1200" aria-label="Three luminous pink jellyfish floating in a dark blue sea, drawn entirely with JavaScript.">A procedural jellyfish illustration.</canvas>
+<script>
+// No image files, libraries, network requests or embedded media.
+// Every mark is generated below with the browser's Canvas drawing commands.
+const canvas = document.getElementById('art');
+const ctx = canvas.getContext('2d');
+const W=1200, H=1200;
+let seed=1847;
+function random(){seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;}
+function dot(x,y,r,color){ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();}
+function stroke(points,color,width){ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.strokeStyle=color;ctx.lineWidth=width;ctx.stroke();}
+
+// Deep-water background, with a soft shaft of light.
+const sea=ctx.createLinearGradient(0,0,W,H);
+sea.addColorStop(0,'#174b60');sea.addColorStop(.5,'#092b40');sea.addColorStop(1,'#071525');
+ctx.fillStyle=sea;ctx.fillRect(0,0,W,H);
+const light=ctx.createRadialGradient(280,180,0,340,270,780);
+light.addColorStop(0,'rgba(55,147,153,.25)');light.addColorStop(1,'rgba(24,73,96,0)');
+ctx.fillStyle=light;ctx.fillRect(0,0,W,H);
+for(let j=0;j<14;j++){
+  ctx.beginPath();ctx.moveTo(90+j*42,0);ctx.lineTo(580+j*40,1080);ctx.lineTo(360+j*38,1080);ctx.closePath();
+  ctx.fillStyle='rgba(98,192,192,.009)';ctx.fill();
+}
+// Suspended particles: one rule generates thousands of different marks.
+for(let i=0;i<6200;i++){
+  const x=random()*W,y=random()*H,r=.25+random()*1.2;
+  dot(x,y,r,`rgba(133,211,209,${.02+random()*.2})`);
+}
+
+function jellyfish(x,y,scale,angle){
+  ctx.save();ctx.translate(x,y);ctx.rotate(angle);ctx.scale(scale,scale);
+  // Light around the animal, using a transparent radial gradient.
+  const halo=ctx.createRadialGradient(0,-25,10,0,-25,300);
+  halo.addColorStop(0,'rgba(255,126,169,.16)');halo.addColorStop(1,'rgba(255,126,169,0)');
+  ctx.fillStyle=halo;ctx.fillRect(-300,-325,600,600);
+
+  // Fine tentacles. Sine waves give their curves a fluid, organic shape.
+  for(let j=0;j<36;j++){
+    const root=(random()-.5)*280,length=210+random()*420,phase=random()*6.28;
+    const points=[];
+    for(let t=0;t<=1;t+=.006){
+      points.push([root+Math.sin(t*7+phase)*(12+t*37)+t*t*82,20+t*length]);
+    }
+    stroke(points,`rgba(${j%3?255:123},${j%3?161:223},${j%3?190:227},${.19+random()*.4})`,.6+random()*1.5);
+  }
+  // Four thicker, folded oral arms, built from many translucent cross-strokes.
+  for(let arm=0;arm<4;arm++){
+    const length=310+random()*110,phase=arm*1.4;
+    for(let i=0;i<420;i++){
+      const t=i/420,yy=18+t*length;
+      const xx=(arm-1.5)*37+Math.sin(t*8+phase)*27+t*t*70;
+      const width=(1-t)*22+4;
+      const ruffle=Math.sin(t*93+phase)*width;
+      stroke([[xx-width*.4,yy-4],[xx+ruffle,yy],[xx+width*.6,yy+5]],`rgba(255,${146+Math.round(70*t)},192,.19)`,1.5);
+    }
+  }
+  // The bell is a custom curved outline, not an imported picture.
+  function bell(){
+    ctx.beginPath();ctx.moveTo(-177,24);
+    ctx.bezierCurveTo(-168,-77,-93,-160,0,-162);
+    ctx.bezierCurveTo(94,-163,168,-80,177,24);
+    ctx.bezierCurveTo(124,54,-117,57,-177,24);ctx.closePath();
+  }
+  const body=ctx.createLinearGradient(0,-170,0,65);
+  body.addColorStop(0,'rgba(255,217,218,.87)');body.addColorStop(.22,'rgba(246,130,171,.65)');
+  body.addColorStop(.72,'rgba(181,78,143,.27)');body.addColorStop(1,'rgba(255,158,171,.58)');
+  bell();ctx.fillStyle=body;ctx.fill();
+  ctx.save();bell();ctx.clip();
+  // Curved internal ribs and a cloud of stippled pigment.
+  for(let j=-10;j<=10;j++){
+    ctx.beginPath();ctx.moveTo(j*2,-158);
+    ctx.bezierCurveTo(j*8,-130,j*17,-63,j*16.5,44);
+    ctx.strokeStyle='rgba(255,218,213,.23)';ctx.lineWidth=1.3;ctx.stroke();
+  }
+  for(let i=0;i<4500;i++){
+    dot((random()-.5)*360,-165+random()*220,.25+random()*1.2,`rgba(255,219,211,${random()*.24})`);
+  }
+  // Four softly drawn internal loops.
+  for(let k=0;k<4;k++){
+    ctx.save();ctx.translate((k-1.5)*29,-22+Math.abs(k-1.5)*5);ctx.rotate((k-1.5)*.35);
+    ctx.beginPath();ctx.ellipse(0,0,23,39,0,0,Math.PI*2);ctx.strokeStyle='rgba(255,208,182,.5)';ctx.lineWidth=4;ctx.stroke();ctx.restore();
+  }
+  ctx.restore();
+  bell();ctx.strokeStyle='rgba(255,219,212,.74)';ctx.lineWidth=1.8;ctx.stroke();
+  // Scalloped luminous edge.
+  const edge=[];
+  for(let i=0;i<=280;i++){
+    const t=i/280;edge.push([-177+354*t,24+19*Math.sin(Math.PI*t)+3*Math.sin(t*Math.PI*32)]);
+  }
+  stroke(edge,'rgba(255,211,199,.95)',2.5);
+  ctx.restore();
+}
+
+// Same drawing recipe, three sets of position / size / rotation inputs.
+jellyfish(912,652,.42,.24);
+jellyfish(245,775,.28,-.23);
+jellyfish(565,390,1.25,-.15);
+
+// A final thin layer of grain ties the illustration together.
+for(let i=0;i<45000;i++){
+  const v=random()>.5?'255,227,208':'0,6,24';
+  ctx.fillStyle=`rgba(${v},${.015+random()*.045})`;
+  ctx.fillRect(random()*W,random()*H,1,1);
+}
+// Quiet specimen-plate typography and border, also drawn on the canvas.
+ctx.strokeStyle='rgba(174,214,210,.3)';ctx.lineWidth=1;ctx.strokeRect(38.5,38.5,1123,1123);
+ctx.fillStyle='#a3c8ca';ctx.font='13px sans-serif';ctx.letterSpacing='3px';
+ctx.fillText('PELAGIC STUDIES',76,92);
+ctx.textAlign='right';ctx.fillText('PLATE 01',1124,92);ctx.textAlign='left';
+ctx.fillStyle='#f0dcd6';ctx.font='italic 43px Georgia,serif';ctx.letterSpacing='0px';ctx.fillText('After the light',76,1079);
+ctx.fillStyle='#9bbcc1';ctx.font='14px sans-serif';ctx.fillText('Curves, colour, and a little controlled randomness.',78,1110);
+window.drawingComplete=true;
+</script>
+</html>
