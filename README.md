@@ -1,4 +1,4 @@
-# MotionLoom Studio
+<p align="center"> <img src="docs/motionloom-studio.png" alt="MotionLoom Studio" width="800"> </p>
 
 **Describe the motion. Claude directs it. JavaScript draws it.**
 
