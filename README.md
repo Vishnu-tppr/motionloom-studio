@@ -55,7 +55,7 @@ Claude reads the brief, picks a renderer profile, plans shots, writes the determ
 
 ### Claude-native workflow
 
-Plugin + skills architecture. Motion-design instructions live in `skills/motionloom/`. Separate agents handle direction, live editing, and visual QA — this isn't one giant prompt trying to do everything at once [web:157].
+Plugin + skills architecture. Motion-design instructions live in `skills/motionloom/`. Separate agents handle direction, live editing, and visual QA — this isn't one giant prompt trying to do everything at once.
 
 ### 6-phase prompt optimizer
 
@@ -146,7 +146,7 @@ Scrub shots, preview transitions, inspect scene parameters, steer revisions — 
 
 ## Claude Code install
 
-Claude Code plugins package skills as a namespaced, reusable unit [web:157].
+Claude Code plugins package skills as a namespaced, reusable unit.
 
 ```text
 /plugin marketplace add vishnu-tppr/motionloom-studio
