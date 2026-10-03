@@ -1,24 +1,27 @@
-<p align="center"> <img src="docs/motionloom-studio.png" alt="MotionLoom Studio" width="800"> </p>
+<p align="center"> <img src="docs/motionloom-logo.png" alt="MotionLoom Studio logo" width="375">
 
-**Describe the motion. Claude directs it. JavaScript draws it.**
+# MotionLoom Studio
 
 MotionLoom Studio is an open-source Claude Code plugin and skill system for deterministic JavaScript motion graphics: procedural animation, character animation, and SaaS/AI launch videos.
 
-Most AI video tools hand you pixels and a shrug. You can't scrub them, inspect them, or figure out why frame 340 looks wrong. MotionLoom does the opposite: animation is code. Claude acts as motion director and animation engineer, writing Canvas, p5.js, SVG, and Remotion scenes you can scrub, re-render, inspect frame by frame, and export at consistent quality [web:396][web:397].
+Most AI video tools hand you pixels and a shrug. You can't scrub them, inspect them, or figure out why frame 340 looks wrong. MotionLoom does the opposite: animation is code. Claude acts as motion director and animation engineer, writing Canvas, p5.js, SVG, and Remotion scenes you can scrub, re-render, inspect frame by frame, and export at consistent quality.
 
-Claude Code plugins package reusable skills for distribution [web:157] — MotionLoom uses that to give Claude a repeatable production workflow instead of one-off scripts.
+Claude Code plugins package reusable skills for distribution — MotionLoom uses that to give Claude a repeatable production workflow instead of one-off scripts.
 
 ---
 
 ## What MotionLoom is
-
+<p align="center">
+  <img src="docs/motionloom-banner.png" alt="MotionLoom Studio — describe the motion, Claude directs it, JavaScript draws it" width="100%">
+</p>
+  
 Three layers, not one starter template:
 
 1. **Skill layer** — Claude learns how to read a creative brief, storyboard motion, pick a visual grammar, and revise.
 2. **Studio layer** — live preview, timeline scrubbing, parameter editing, visual QA.
 3. **Engine layer** — deterministic rendering via Remotion and Canvas/p5.js.
 
-The real product is the motion-design intelligence baked into the skill layer. The starter code is just where it runs [web:157].
+The real product is the motion-design intelligence baked into the skill layer. The starter code is just where it runs.
 
 ---
 
@@ -73,7 +76,7 @@ Turns "make it cool" into an actual plan:
 | `pure-procedural` | Character acting, loops, natural-media motion, procedural art | Canvas / p5.js / p5.brush |
 | `hybrid` | Mixed UI + procedural scenes | Remotion timeline + procedural layers |
 
-Remotion handles programmatic video rendering from JavaScript, which fits timeline-driven launch videos well [web:396][web:400]. p5.js gives a browser-native surface that's a better fit for procedural and generative motion [web:397][web:404].
+Remotion handles programmatic video rendering from JavaScript, which fits timeline-driven launch videos well. p5.js gives a browser-native surface that's a better fit for procedural and generative motion.
 
 ### Deterministic render contract
 
@@ -173,35 +176,35 @@ If you add more skills, document them here too:
 ## Architecture
 
 ```text
-.claude-plugin/            Plugin + marketplace manifests
-skills/motionloom/         Claude Code skill instructions
+.claude-plugin/             Plugin + marketplace manifests
+skills/motionloom/          Claude Code skill instructions
   references/
-    prompt-optimizer.md    Brief-to-spec pipeline
-    renderer-profiles.md   product-launch / pure-procedural / hybrid
-    engine-contract.md     Deterministic render contract
-    product-motion.md      SaaS UI motion language
-    character-film.md      Character motion and acting
-    procedural-art.md      Procedural systems and marks
+    prompt-optimizer.md     Brief-to-spec pipeline
+    renderer-profiles.md    product-launch / pure-procedural / hybrid
+    engine-contract.md      Deterministic render contract
+    product-motion.md       SaaS UI motion language
+    character-film.md       Character motion and acting
+    procedural-art.md       Procedural systems and marks
 
 agents/
-  director/                Shot planning and creative direction
+  director/                 Shot planning and creative direction
   live-editor/              Live steering and structured changes
   visual-qa/                Render inspection and defect reporting
 
 engine/
   src/
-    core.js                Seeded RNG, math, camera helpers
+    core.js                 Seeded RNG, math, camera helpers
     motion.js               Springs, lag chains, easing, causal motion
-    procedural.js            Offscreen caching, morph paths, token systems
-    typography.js            Kinetic typography primitives
-    product.js               UI cards, code panes, bento layouts
-    character.js             2D character rig primitives
-    timeline.js              Shot timing and transitions
+    procedural.js           Offscreen caching, morph paths, token systems
+    typography.js           Kinetic typography primitives
+    product.js              UI cards, code panes, bento layouts
+    character.js            2D character rig primitives
+    timeline.js             Shot timing and transitions
 
   tools/
     render.mjs              Headless renderer
-    live-server.mjs          Local steering bridge
-    detector.mjs             Determinism and visual checks
+    live-server.mjs         Local steering bridge
+    detector.mjs            Determinism and visual checks
 ```
 
 ---
@@ -230,7 +233,6 @@ Different jobs need different backends. That's the whole reason three profiles e
 | `pure-procedural` | Character acting, loops, painterly motion, procedural art | Canvas / p5.js / p5.brush |
 | `hybrid` | Mixed UI + procedural scenes | Remotion timeline + procedural layers |
 
-[web:396][web:397]
 
 ---
 
